@@ -32,8 +32,8 @@ class BigStringNumbersTest {
     @Test
     void GivenBothAddendsWhenAddReturnsTheSumOfThem() {
 
-        final BigInteger addend = getRandomBigInteger(128);
-        final BigInteger anotherAddend = getRandomBigInteger(64);
+        final BigInteger addend = getRandomBigInteger(12);
+        final BigInteger anotherAddend = getRandomBigInteger(8);
         final String expected = addend.add(anotherAddend).toString();
         final String actual = BigStringNumbers.add(addend.toString(), anotherAddend.toString());
         assertEquals(expected, actual);
@@ -47,6 +47,28 @@ class BigStringNumbersTest {
         final int secondSize = getBigIntegerSize(second);
         final int expected = (firstSize >= secondSize)? firstSize : secondSize;
         final int actual = BigStringNumbers.getMaxLength(first.toString(), second.toString());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void GivenOneStringNumberReturnArrayOfDigits() {
+        final BigInteger number = getRandomBigInteger(128);
+        final int numberSize = getBigIntegerSize(number);
+        final byte[] numberAsArray = BigStringNumbers.toByteArray(number.toString());
+        assertEquals(numberSize, numberAsArray.length);
+        for (int i=0; i< numberSize; i++) {
+            final String expected = number.toString().substring(i, i+1);
+            final String actual = String.valueOf(numberAsArray[i]);
+            assertEquals(expected, actual);
+        }
+    }
+
+    @Test
+    void GivenOneStringNumberWithLessDigitsReturnNumberWithLeadinZeros() {
+        final BigInteger number = getRandomBigInteger(8);
+        final int expected = 10;
+        final String numberWithLeadingZeros = BigStringNumbers.addLeadingZeros(number.toString(), expected);
+        final int actual = numberWithLeadingZeros.length();
         assertEquals(expected, actual);
     }
 }
