@@ -56,7 +56,7 @@ class BigStringNumbersTest {
         final BigInteger second = getRandomBigInteger();
         final int secondSize = getBigIntegerSize(second);
         final int expected = (firstSize >= secondSize)? firstSize : secondSize;
-        final int actual = BigStringNumbers.getMaxLength(first.toString(), second.toString());
+        final int actual = BigStringNumbers.getMaxDigits(first.toString(), second.toString());
         assertEquals(expected, actual);
     }
 
@@ -64,7 +64,7 @@ class BigStringNumbersTest {
     void GivenOneStringNumberReturnArrayOfDigits() {
         final BigInteger number = getRandomBigInteger(128);
         final int numberSize = getBigIntegerSize(number);
-        final byte[] numberAsArray = BigStringNumbers.toByteArray(number.toString());
+        final byte[] numberAsArray = BigStringNumbers.stringNumberToDigitArray(number.toString());
         assertEquals(numberSize, numberAsArray.length);
         for (int i=0; i< numberSize; i++) {
             final String expected = number.toString().substring(i, i+1);
@@ -86,7 +86,7 @@ class BigStringNumbersTest {
     void GivenAnArrayOfDigitsReturnStringRepresentation() {
         final byte[] numberAsArray = new byte[] {0, 0, 0, 1, 2, 0, 3 ,4, 5, 0};
         final String expected = "1203450";
-        final String actual = BigStringNumbers.fromByteArray(numberAsArray);
+        final String actual = BigStringNumbers.digitArrayToStringNumber(numberAsArray);
         assertEquals(expected, actual);
     }
 }
