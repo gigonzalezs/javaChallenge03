@@ -1,14 +1,11 @@
 package org.example;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class BigStringNumbers {
 
+    public static final byte ZERO_POSITION_IN_ASCII_TABLE = 48;
     private BigStringNumbers() {}
 
     public static String add(String aNumber, String anotherNumber) {
@@ -17,15 +14,15 @@ public class BigStringNumbers {
         board[1] = toByteArray(aNumber, maxLength);
         board[2] = toByteArray(anotherNumber, maxLength);
 
-        for (int i = (maxLength-1); i > 0; i--) {
+        for (int i = (maxLength-1); i >= 0; i--) {
             int sumByColumn = board[0][i] + board[1][i] + board[2][i];
-            if (sumByColumn > 10) {
+            if (sumByColumn >= 10) {
                 sumByColumn = sumByColumn - 10;
                 board[0][i-1] = 1;
             }
             board[3][i] = (byte) sumByColumn;
         }
-        return null;
+        return fromByteArray(board[3]);
     }
 
 
@@ -43,12 +40,25 @@ public class BigStringNumbers {
 
     public static byte[] toByteArray(String number, int size) {
         final String numberWithLeadingZeros = addLeadingZeros(number, size);
-        final byte zeroPositionInAsciiTable = 48;
         byte[] numberAsBytes = numberWithLeadingZeros.getBytes();
         for (int i=0; i< numberAsBytes.length; i++) {
-            numberAsBytes[i] = (byte) (numberAsBytes[i] - zeroPositionInAsciiTable);
+            numberAsBytes[i] = (byte) (numberAsBytes[i] - ZERO_POSITION_IN_ASCII_TABLE);
         }
         return numberAsBytes;
+    }
+
+    public static String fromByteArray(byte[] numberAsBytes) {
+        boolean canBeTrailingZero = true;
+        for (int i=0; i< numberAsBytes.length; i++) {
+            if (canBeTrailingZero && numberAsBytes[i] == 0) {
+                numberAsBytes[i] = 32;
+
+            } else {
+                canBeTrailingZero = false;
+                numberAsBytes[i] = (byte) (numberAsBytes[i] + ZERO_POSITION_IN_ASCII_TABLE);
+            }
+        }
+        return new String(numberAsBytes).trim();
     }
 
     public static String addLeadingZeros(String number, int expectedSize) {

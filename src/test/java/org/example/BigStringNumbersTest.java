@@ -31,9 +31,19 @@ class BigStringNumbersTest {
 
     @Test
     void GivenBothAddendsWhenAddReturnsTheSumOfThem() {
+        final BigInteger addend = getRandomBigInteger(128);
+        final BigInteger anotherAddend = getRandomBigInteger(128);
+        final String expected = addend.add(anotherAddend).toString();
+        final String actual = BigStringNumbers.add(addend.toString(), anotherAddend.toString());
+        assertEquals(expected, actual);
+    }
 
-        final BigInteger addend = getRandomBigInteger(12);
-        final BigInteger anotherAddend = getRandomBigInteger(8);
+    @Test
+    void GivenBothAddendsStartingWithDigitNineWhenAddReturnsTheSumOfThem() {
+        final BigInteger addend = new BigInteger( "9" + getRandomBigInteger(128)
+                .toString().substring(1));
+        final BigInteger anotherAddend = new BigInteger( "9" + getRandomBigInteger(128)
+                .toString().substring(1));
         final String expected = addend.add(anotherAddend).toString();
         final String actual = BigStringNumbers.add(addend.toString(), anotherAddend.toString());
         assertEquals(expected, actual);
@@ -69,6 +79,14 @@ class BigStringNumbersTest {
         final int expected = 10;
         final String numberWithLeadingZeros = BigStringNumbers.addLeadingZeros(number.toString(), expected);
         final int actual = numberWithLeadingZeros.length();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void GivenAnArrayOfDigitsReturnStringRepresentation() {
+        final byte[] numberAsArray = new byte[] {0, 0, 0, 1, 2, 0, 3 ,4, 5, 0};
+        final String expected = "1203450";
+        final String actual = BigStringNumbers.fromByteArray(numberAsArray);
         assertEquals(expected, actual);
     }
 }
