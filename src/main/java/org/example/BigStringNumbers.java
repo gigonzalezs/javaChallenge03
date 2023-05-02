@@ -5,16 +5,23 @@ import java.util.Comparator;
 
 public class BigStringNumbers {
 
-    private static final byte ZERO_POSITION_IN_ASCII_TABLE = 48;
-    private static final int BOARD_TOTAL_ROWS = 4;
-    private static final int CARRY_ROW = 0;
-    private static final int FIRST_ADDEND_ROW = 1;
-    private static final int SECOND_ADDEND_ROW = 2;
-    private static final int RESULT_ROW = 3;
-    private static final int TEN = 10;
-    private BigStringNumbers() {}
+    private  final byte ZERO_POSITION_IN_ASCII_TABLE = 48;
+    private  final int BOARD_TOTAL_ROWS = 4;
+    private  final int CARRY_ROW = 0;
+    private  final int FIRST_ADDEND_ROW = 1;
+    private  final int SECOND_ADDEND_ROW = 2;
+    private  final int RESULT_ROW = 3;
+    private  final int TEN = 10;
 
-    public static String add(String aNumber, String anotherNumber) {
+    private final NumberValidator validator;
+
+    public BigStringNumbers(NumberValidator validator) {
+        this.validator = validator;
+    }
+
+    public String addNumbers(String aNumber, String anotherNumber) {
+        validator.validate(aNumber);
+        validator.validate(anotherNumber);
         final int maxDigits = getMaxDigits(aNumber, anotherNumber) + 1;
         final byte[][] board = new byte[BOARD_TOTAL_ROWS][maxDigits];
         board[1] = stringNumberToDigitArray(aNumber, maxDigits);
@@ -33,18 +40,18 @@ public class BigStringNumbers {
         return digitArrayToStringNumber(board[RESULT_ROW]);
     }
 
-    public static int getMaxDigits(String... numbers) {
+    public int getMaxDigits(String... numbers) {
         return Arrays.stream(numbers)
                 .map(number -> number.trim().length() )
                 .max(Comparator.naturalOrder())
                 .orElse(0);
     }
 
-    public static byte[] stringNumberToDigitArray(String number) {
+    public byte[] stringNumberToDigitArray(String number) {
         return stringNumberToDigitArray(number, number.trim().length());
     }
 
-    public static byte[] stringNumberToDigitArray(String number, int size) {
+    public byte[] stringNumberToDigitArray(String number, int size) {
         final String numberWithLeadingZeros = addLeadingZeros(number, size);
         byte[] numberAsBytes = numberWithLeadingZeros.getBytes();
         for (int i=0; i< numberAsBytes.length; i++) {
@@ -53,7 +60,7 @@ public class BigStringNumbers {
         return numberAsBytes;
     }
 
-    public static String digitArrayToStringNumber(byte[] digitArray) {
+    public String digitArrayToStringNumber(byte[] digitArray) {
         boolean currentDigitCanBeTrailingZero = true;
         for (int i=0; i< digitArray.length; i++) {
             if (currentDigitCanBeTrailingZero && digitArray[i] == 0) {
@@ -67,7 +74,7 @@ public class BigStringNumbers {
         return new String(digitArray).trim();
     }
 
-    public static String addLeadingZeros(String number, int expectedSize) {
+    public String addLeadingZeros(String number, int expectedSize) {
         final int currentSize = number.trim().length();
         if (currentSize >= expectedSize) {
             return number;

@@ -2,31 +2,28 @@ package org.example;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigInteger;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
-class BigStringNumbersTest {
+@ExtendWith(MockitoExtension.class)
+class BigStringNumbersTest extends NumbersBaseTest {
 
-    private Random rnd;
+    private BigStringNumbers sut;
 
+    @Mock
+    private BigStringNumberValidator validator;
     @BeforeEach
-    void setUp() {
-        rnd = new Random();
-    }
-
-    private BigInteger getRandomBigInteger() {
-        return getRandomBigInteger(rnd.nextInt(126) + 2);
-    }
-
-    private BigInteger getRandomBigInteger(int bitLength) {
-        return BigInteger.probablePrime(bitLength, rnd);
-    }
-
-    private int getBigIntegerSize(BigInteger number) {
-        return number.toString().trim().length();
+    public void setUp() {
+        super.setUp();
+        sut = new BigStringNumbers(validator);
     }
 
     @Test
@@ -34,7 +31,8 @@ class BigStringNumbersTest {
         final BigInteger addend = getRandomBigInteger(128);
         final BigInteger anotherAddend = getRandomBigInteger(128);
         final String expected = addend.add(anotherAddend).toString();
-        final String actual = BigStringNumbers.add(addend.toString(), anotherAddend.toString());
+        doNothing().when(validator).validate(any());
+        final String actual = sut.addNumbers(addend.toString(), anotherAddend.toString());
         assertEquals(expected, actual);
     }
 
@@ -45,7 +43,8 @@ class BigStringNumbersTest {
         final BigInteger anotherAddend = new BigInteger( "9" + getRandomBigInteger(128)
                 .toString().substring(1));
         final String expected = addend.add(anotherAddend).toString();
-        final String actual = BigStringNumbers.add(addend.toString(), anotherAddend.toString());
+        doNothing().when(validator).validate(any());
+        final String actual = sut.addNumbers(addend.toString(), anotherAddend.toString());
         assertEquals(expected, actual);
     }
 
@@ -56,7 +55,7 @@ class BigStringNumbersTest {
         final BigInteger second = getRandomBigInteger();
         final int secondSize = getBigIntegerSize(second);
         final int expected = (firstSize >= secondSize)? firstSize : secondSize;
-        final int actual = BigStringNumbers.getMaxDigits(first.toString(), second.toString());
+        final int actual = sut.getMaxDigits(first.toString(), second.toString());
         assertEquals(expected, actual);
     }
 
@@ -64,7 +63,7 @@ class BigStringNumbersTest {
     void GivenOneStringNumberReturnArrayOfDigits() {
         final BigInteger number = getRandomBigInteger(128);
         final int numberSize = getBigIntegerSize(number);
-        final byte[] numberAsArray = BigStringNumbers.stringNumberToDigitArray(number.toString());
+        final byte[] numberAsArray = sut.stringNumberToDigitArray(number.toString());
         assertEquals(numberSize, numberAsArray.length);
         for (int i=0; i< numberSize; i++) {
             final String expected = number.toString().substring(i, i+1);
@@ -77,7 +76,7 @@ class BigStringNumbersTest {
     void GivenOneStringNumberWithLessDigitsReturnNumberWithLeadinZeros() {
         final BigInteger number = getRandomBigInteger(8);
         final int expected = 10;
-        final String numberWithLeadingZeros = BigStringNumbers.addLeadingZeros(number.toString(), expected);
+        final String numberWithLeadingZeros = sut.addLeadingZeros(number.toString(), expected);
         final int actual = numberWithLeadingZeros.length();
         assertEquals(expected, actual);
     }
@@ -86,7 +85,7 @@ class BigStringNumbersTest {
     void GivenAnArrayOfDigitsReturnStringRepresentation() {
         final byte[] numberAsArray = new byte[] {0, 0, 0, 1, 2, 0, 3 ,4, 5, 0};
         final String expected = "1203450";
-        final String actual = BigStringNumbers.digitArrayToStringNumber(numberAsArray);
+        final String actual = sut.digitArrayToStringNumber(numberAsArray);
         assertEquals(expected, actual);
     }
 }
