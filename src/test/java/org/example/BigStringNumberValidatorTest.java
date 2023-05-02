@@ -56,4 +56,13 @@ class BigStringNumberValidatorTest extends NumbersBaseTest {
         assertEquals(expected, exception.getMessage());
     }
 
+    @Test
+    public void GivenAEmptyNumberMustThrownException(){
+        final String expected = "empty";
+        NumberFormatException exception = assertThrows(NumberFormatException.class, () -> {
+            sut.validate("");
+        });
+        assertEquals(expected, exception.getMessage());
+    }
+
 }

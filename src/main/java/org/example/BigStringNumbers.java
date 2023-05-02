@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class BigStringNumbers {
-
-    private  final byte ZERO_POSITION_IN_ASCII_TABLE = 48;
     private  final int BOARD_TOTAL_ROWS = 4;
     private  final int CARRY_ROW = 0;
     private  final int FIRST_ADDEND_ROW = 1;
@@ -14,9 +12,11 @@ public class BigStringNumbers {
     private  final int TEN = 10;
 
     private final NumberValidator validator;
+    private final NumberFormatter formatter;
 
-    public BigStringNumbers(NumberValidator validator) {
+    public BigStringNumbers(NumberValidator validator, NumberFormatter formatter) {
         this.validator = validator;
+        this.formatter = formatter;
     }
 
     public String addNumbers(String aNumber, String anotherNumber) {
@@ -24,8 +24,8 @@ public class BigStringNumbers {
         validator.validate(anotherNumber);
         final int maxDigits = getMaxDigits(aNumber, anotherNumber) + 1;
         final byte[][] board = new byte[BOARD_TOTAL_ROWS][maxDigits];
-        board[1] = stringNumberToDigitArray(aNumber, maxDigits);
-        board[2] = stringNumberToDigitArray(anotherNumber, maxDigits);
+        board[1] = formatter.stringNumberToDigitArray(aNumber, maxDigits);
+        board[2] = formatter.stringNumberToDigitArray(anotherNumber, maxDigits);
 
         for (int column = (maxDigits - 1); column >= 0; column--) {
             int columnSum = board[CARRY_ROW][column]
@@ -37,7 +37,7 @@ public class BigStringNumbers {
             }
             board[RESULT_ROW][column] = (byte) columnSum;
         }
-        return digitArrayToStringNumber(board[RESULT_ROW]);
+        return formatter.digitArrayToStringNumber(board[RESULT_ROW]);
     }
 
     public int getMaxDigits(String... numbers) {
@@ -47,39 +47,4 @@ public class BigStringNumbers {
                 .orElse(0);
     }
 
-    public byte[] stringNumberToDigitArray(String number) {
-        return stringNumberToDigitArray(number, number.trim().length());
-    }
-
-    public byte[] stringNumberToDigitArray(String number, int size) {
-        final String numberWithLeadingZeros = addLeadingZeros(number, size);
-        byte[] numberAsBytes = numberWithLeadingZeros.getBytes();
-        for (int i=0; i< numberAsBytes.length; i++) {
-            numberAsBytes[i] = (byte) (numberAsBytes[i] - ZERO_POSITION_IN_ASCII_TABLE);
-        }
-        return numberAsBytes;
-    }
-
-    public String digitArrayToStringNumber(byte[] digitArray) {
-        boolean currentDigitCanBeTrailingZero = true;
-        for (int i=0; i< digitArray.length; i++) {
-            if (currentDigitCanBeTrailingZero && digitArray[i] == 0) {
-                digitArray[i] = 32;
-
-            } else {
-                currentDigitCanBeTrailingZero = false;
-                digitArray[i] = (byte) (digitArray[i] + ZERO_POSITION_IN_ASCII_TABLE);
-            }
-        }
-        return new String(digitArray).trim();
-    }
-
-    public String addLeadingZeros(String number, int expectedSize) {
-        final int currentSize = number.trim().length();
-        if (currentSize >= expectedSize) {
-            return number;
-        }
-        final int leadingZeros = expectedSize - currentSize;
-        return String.format("%0"+ leadingZeros +"d", 0) + number;
-    }
 }

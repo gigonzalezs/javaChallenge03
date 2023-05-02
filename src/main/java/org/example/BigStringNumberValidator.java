@@ -10,6 +10,9 @@ public class BigStringNumberValidator implements NumberValidator {
         if (number == null) {
             throw new NumberFormatException("null");
         }
+        if (number == "") {
+            throw new NumberFormatException("empty");
+        }
         final byte[] numberAsBytes = number.getBytes();
         for (int i=0; i< numberAsBytes.length; i++) {
             if (numberAsBytes[i] < ZERO_POSITION_IN_ASCII_TABLE
